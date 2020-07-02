@@ -4,10 +4,12 @@ let variables = {
     stopMsgId: undefined,
     members: undefined,
     spacemanRole: undefined,
+    dmChannel: undefined,
 };
 
-function stop(user) {
+function stop(reaction, user) {
     console.log(`${user.username} stopped the game.`);
+    variables.dmChannel.send('## Welcome Back Spacemen!');
     // Remove Rolls and unmute everyone;
     variables.members.each((member) => {
         member.voice.setMute(false);
@@ -18,36 +20,43 @@ function stop(user) {
 function run(msgObj) {
     console.log(`${msgObj.member.user.username} started a game of Spaceman`);
     const spacemanRole = makeSpacemanRole(msgObj);
-    makeSpacemen(msgObj, spacemanRole, variables);
-    const message_embed = new Discord.MessageEmbed()
-        .setColor('#C4C9BF')
-        .setTitle('Now Playing a round of Unfortunate Spaceman')
-        .setDescription('Who is the monster? Its Probably Mitchell.')
-        .addFields(
-            { name: '---------------------------------------', value: '\u200B' },
-            { name: 'Thumbs up this stop sign to end the round', value: '\u200B' },
-        )
-        .setImage('https://upload.wikimedia.org/wikipedia/commons/8/81/Stop_sign.png');
-    msgObj.channel.send(message_embed).then(msg => { variables.stopMsgId = msg.id; });
-    variables.running = true;
-    variables.spacemanRole = spacemanRole;
+    spacemanRole.then(role => {
+        makeSpacemen(msgObj, role, variables);
+        const message_embed = new Discord.MessageEmbed()
+            .setColor('#C4C9BF')
+            .setTitle('Now Playing a round of Unfortunate Spaceman')
+            .setDescription('Who is the monster? Its Probably Mitchell.')
+            .addFields(
+                { name: '---------------------------------------', value: '\u200B' },
+                { name: 'Thumbs up this stop sign to end the round', value: '\u200B' },
+            )
+            .setImage('https://upload.wikimedia.org/wikipedia/commons/8/81/Stop_sign.png');
+        msgObj.channel.send(message_embed).then(msg => { variables.stopMsgId = msg.id; });
+        variables.running = true;
+        variables.spacemanRole = role;
+
+    });
 }
 
 function makeSpacemen(msgObj, spacemanRole) {
     // Iterate through the members in the channel the message came from and give spaceman role
+    variables.dmChannel = msgObj.channel;
     const voice_channel = msgObj.member.voice.channel;
     const members = voice_channel.members;
     variables.members = members;
     members.each(member => {
+        console.log(`Editing ${member.nickname} attributes`);
         member.voice.setMute(true).catch(rej => { console.log(`Muting Error: ${(rej)}`); }); // Have to mute before changing role
-        member.setNickname('Spaceman').catch(err => { console.log(`Setting Nickname Error: ${err}`); }); // change nickname
         member.roles.add(spacemanRole).catch(err => { console.log(`Setting Role Error: ${(err)}`); }); // give spaceman role
+    });
+    members.each(member => {
+        member.setNickname('Spaceman').catch(err => { console.log(`Setting Nickname Error: ${err}`); }); // change nickname
     });
 }
 function makeSpacemanRole(msgObj) {
     // Make the spaceman role which allows people to unumte themselves
     const guild = msgObj.guild;
-    let spaceman_role = guild.roles.cache.find(role => role.name === 'Unfortunate Spaceman');
+    let spaceman_role = Promise.resolve(guild.roles.cache.find(role => role.name === 'Unfortunate Spaceman'));
     if (!spaceman_role) {
         const permissions = new Discord.Permissions(Discord.Permissions.FLAGS.MUTE_MEMBERS);
         spaceman_role = guild.roles.create({
