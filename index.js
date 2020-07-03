@@ -28,20 +28,18 @@ function parseCommand(msgObj) {
     let message = msgObj.content.slice(1);
     const messageArr = message.split(/ (.*)/);
     const command = messageArr[0];
-    message = messageArr[1];
 
     if (command === 'spaceman') {
         spaceman.run(msgObj);
     }
-    else if (command === 'uwu') {
-        uwuifying.custom(message, msgObj, uwuifying_data, Discord);
-
+    else if (command === 'uwuify') {
+        uwuifying.custom(messageArr[1], msgObj, uwuifying_data, Discord);
     }
     else if (command === 'commands') {
         msgObj.channel.send(commandsEmbed);
     }
     else {
-        msgObj.reply('Not a command!');
+        console.log('Not a command');
     }
 }
 

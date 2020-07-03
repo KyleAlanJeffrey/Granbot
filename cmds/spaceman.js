@@ -9,7 +9,7 @@ let variables = {
 
 function stop(reaction, user) {
     console.log(`${user.username} stopped the game.`);
-    variables.dmChannel.send('## Welcome Back Spacemen!');
+    variables.dmChannel.send('Welcome Back Spacemen!');
     // Remove Rolls and unmute everyone;
     variables.members.each((member) => {
         member.voice.setMute(false);
@@ -22,6 +22,7 @@ function run(msgObj) {
     const spacemanRole = makeSpacemanRole(msgObj);
     spacemanRole.then(role => {
         makeSpacemen(msgObj, role, variables);
+
         const message_embed = new Discord.MessageEmbed()
             .setColor('#C4C9BF')
             .setTitle('Now Playing a round of Unfortunate Spaceman')
@@ -34,7 +35,6 @@ function run(msgObj) {
         msgObj.channel.send(message_embed).then(msg => { variables.stopMsgId = msg.id; });
         variables.running = true;
         variables.spacemanRole = role;
-
     });
 }
 
@@ -45,24 +45,24 @@ function makeSpacemen(msgObj, spacemanRole) {
     const members = voice_channel.members;
     variables.members = members;
     members.each(member => {
-        console.log(`Editing ${member.nickname} attributes`);
-        member.voice.setMute(true).catch(rej => { console.log(`Muting Error: ${(rej)}`); }); // Have to mute before changing role
+        console.log(`Editing ${member.user.username} attributes`);
+        // member.voice.setMute(true).catch(rej => { console.log(`Muting Error: ${(rej)}`); }); // Have to mute before changing role
         member.roles.add(spacemanRole).catch(err => { console.log(`Setting Role Error: ${(err)}`); }); // give spaceman role
+        // member.setNickname('Spaceman').catch(err => { console.log(`Setting Nickname Error: ${err}`); }); // change nickname
     });
-    members.each(member => {
-        member.setNickname('Spaceman').catch(err => { console.log(`Setting Nickname Error: ${err}`); }); // change nickname
-    });
+    // members.each(member => {
+    // });
 }
 function makeSpacemanRole(msgObj) {
     // Make the spaceman role which allows people to unumte themselves
     const guild = msgObj.guild;
-    let spaceman_role = Promise.resolve(guild.roles.cache.find(role => role.name === 'Unfortunate Spaceman'));
-    if (!spaceman_role) {
+    let spacemanRole = guild.roles.cache.find(role => role.name === 'Unfortunate Spaceman');
+    if (!spacemanRole) {
         const permissions = new Discord.Permissions(Discord.Permissions.FLAGS.MUTE_MEMBERS);
-        spaceman_role = guild.roles.create({
+        spacemanRole = guild.roles.create({
             data: {
                 name: 'Unfortunate Spaceman',
-                color: 'BLUE',
+                color: 'DARK_GREY',
                 hoist: true,
                 permissions: permissions,
             },
@@ -71,7 +71,10 @@ function makeSpacemanRole(msgObj) {
             .then(acc => { console.log('Made Spaceman Role for the server...'); })
             .catch(rej => { console.log('Error creating Spaceman Role: ' + rej); });
     }
-    return spaceman_role;
+    else{
+        return Promise.resolve(spacemanRole);
+    }
+    return spacemanRole;
 }
 
 const spaceman = {

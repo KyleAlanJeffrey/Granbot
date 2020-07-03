@@ -36,7 +36,7 @@ let uwuify = {
         uwuembed.setDescription(str);
         uwuembed.setColor(16761576);
         // uwuembed.setFooter("Requested by " + msg.author.tag + " | @mention me to uwu-ify msgs", msg.author.avatarURL());
-        msg.channel.send(uwuembed)
+        msg.channel.send(str, { tts: true })
             .then(res => console.log('UwUified a message'))
             .catch(err => console.log('Error: ' + err));
     },
