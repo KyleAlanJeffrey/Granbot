@@ -30,7 +30,7 @@
 		"no-unused-vars": "warn",
 		"no-trailing-spaces": ["error"],
 		"no-var": "error",
-		"object-curly-spacing": ["error", "always"],
+		"object-curly-spacing": ["warn", "always"],
 		"prefer-const": "warn",
 		"quotes": ["error", "single"],
 		"semi": ["error", "always"],

@@ -9,9 +9,13 @@
   "author": "Kyle Jeffrey",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "discord.js": "^12.2.0",
     "eslint": "^7.3.1",
     "fs": "0.0.1-security",
-    "nodemon": "^2.0.4"
+    "mitsuku-api": "^0.2.1",
+    "nodemon": "^2.0.4",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
   }
 }
