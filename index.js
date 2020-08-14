@@ -3,7 +3,7 @@ const uwu = require('./cmds/uwu.js');
 const spaceman = require('./cmds/spaceman');
 const webScrape = require('./cmds/webScrape');
 
-// const { prefix, token } = require('./bot-config.json');
+const { prefix, token } = require('./bot-config.json');
 
 
 /* -------------------------------------- */
